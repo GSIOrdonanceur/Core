@@ -1,0 +1,35 @@
+import java.io.FileNotFoundException;
+
+
+public class Tache {
+	OuvrirFichier fichierTaches = new OuvrirFichier();
+	static String tachesPath = "E:/Outil/Workspace/Ordonnanceur/Ordonnanceur/bin/fichiers_config/taches.txt";
+	public Tache(){
+		
+	}
+	public String[] ouvrirFichierTaches() throws FileNotFoundException
+	{
+		
+		
+		int nbLignesFichierTaches = fichierTaches.compterLigne(tachesPath);
+		String[] taches = new String[nbLignesFichierTaches];
+		taches = fichierTaches.lireFichier(tachesPath);
+		
+	
+		for (int i=0;i<nbLignesFichierTaches;i++)
+		{
+			taches[i] = i +1+" : "+taches[i];
+		}
+		return taches;
+	}
+	public int getLigneFichierTaches() throws FileNotFoundException
+	{
+		
+		return fichierTaches.compterLigne(tachesPath);
+	}
+	
+	public int getPatternParLigne() throws FileNotFoundException
+	{
+		return fichierTaches.compterPatternParLigne(tachesPath, "// ");
+	}
+}
