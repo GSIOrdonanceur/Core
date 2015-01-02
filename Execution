@@ -1,0 +1,187 @@
+import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import javax.management.timer.Timer;
+
+public class Execution extends Thread {
+	int[] dateActuelle = new int[6];
+	static String[][] planning ;
+	static int nbTache = 0;
+	static int nbInstructionParTache = 0;
+	static boolean finDuThread = true;
+	public Execution()
+	{
+		
+	}
+	public void run() 
+	{
+		try {
+			dateActuelle = this.recupDateActuelle();
+			this.afficherDate(dateActuelle);
+			
+			synchronized(GererExecutions.planning)
+			{
+				this.planning=GererExecutions.planning;
+			}
+			synchronized(GererExecutions.instanceDependance)
+			{
+				this.nbTache = GererExecutions.instanceDependance.getLigneFichierDependances();
+				this.nbInstructionParTache = GererExecutions.instanceDependance.getPatternParLigne();
+			}
+			
+			this.afficherPlanning();
+			
+			int refreshTimer = 0;
+			while(finDuThread)
+			{
+				//boucle d'execution
+				dateActuelle = this.recupDateActuelle();
+				this.afficherDate(dateActuelle);
+				
+				//OPTI
+				//this.executeTache("powershell echo 'bonjour'");
+				refreshTimer = this.calculerTimer();
+				System.out.println("refresh = "+refreshTimer);
+				//finDuThread = false;
+				sleep(/*refreshTimer*/1000);
+				this.executerTachePourContrainte();
+				
+				
+			}
+			//sleep(5000);
+			System.out.println("fin de l'ordonnancement");
+			
+			
+		} 
+		catch (InterruptedException | IOException e) 
+		{
+			e.printStackTrace();
+		}
+  	}
+	
+	
+	public int[] traductionDate(String dateDefault)
+	{
+		int[] dateInt = new int[7];
+
+		
+		String[] dateDebutString = new String[2];
+		String[] dateString = new String[3];
+		String[] heureString = new String[3];
+		
+		dateDebutString = dateDefault.split(" ");
+		
+		heureString = dateDebutString[0].split(":");
+		dateString = dateDebutString[1].split("/");
+		//System.out.println("date/heureS : "+heureString[0]+":"+heureString[1]+" "+dateString[0]+"/"+dateString[1]+"/"+dateString[2]);
+		
+		
+		//format jj/mm/aa/hh/mm
+		dateInt[0] = Integer.parseInt(dateString[0]);
+		dateInt[1] = Integer.parseInt(dateString[1]);
+		dateInt[2] = Integer.parseInt(dateString[2]);
+		dateInt[3] = Integer.parseInt(heureString[0]);
+		dateInt[4] = Integer.parseInt(heureString[1]);
+		dateInt[5] = Integer.parseInt(heureString[2]);
+		
+		return dateInt;
+	}
+	public int calculerTimer()
+	{
+		int refreshTimer = 60-dateActuelle[5];
+		
+		return refreshTimer;
+	}
+	public void afficherPlanning()
+	{
+		System.out.println("Planning :");
+		for(int j=0;j<nbTache;j++)
+		{
+			System.out.println(" ");
+			for(int i=0;i<this.nbInstructionParTache;i++)
+			{
+				if (planning[j][i]!= null && planning[j][i].equals(" ") != true)
+					System.out.println(planning[j][i]);
+			}
+		}
+	}
+	public void executerTachePourContrainte()
+	{
+		int[] datePrevu = new int[7];
+		for(int i = 0;i < this.nbTache; i++)
+		{
+			System.out.println(planning[i][3]);
+			datePrevu = this.traductionDate(planning[i][3]);
+			
+			this.afficherDate(datePrevu);
+			
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public int[] recupDateActuelle()
+	{
+		int jourCurrent = 0;
+		int jour12Heur = 0;
+		int[] maDate = new int[7];
+		int[] maDate12Heur = new int[7];
+		Date laDate = new Date();
+		Date date12Heur = new Date(laDate.getTime() + 12L * Timer.ONE_HOUR);
+		//System.out.println(calendar.getTime());
+		
+		
+		Locale locale = Locale.getDefault();
+
+		DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss: dd/MM/yy/");
+		
+		
+		maDate12Heur = this.traductionDate(dateFormat.format(date12Heur));
+		maDate = this.traductionDate(dateFormat.format(laDate));
+		//format jj/mm/aa/hh/mm/ss
+		//System.out.println("date/heure : "+maDate[0]+"/"+maDate[1]+"/"+maDate[2]+" "+maDate[3]+":"+maDate[4]);
+		//System.out.println(date12Heur);
+		
+		if(maDate[0] == maDate12Heur[0])
+		{return maDate;}
+		
+		else
+			{maDate[3] = maDate[3]+12;
+			return maDate;}
+	}
+	
+	public void executeTache(String tache) throws IOException
+	{
+
+		Runtime runtime = Runtime.getRuntime();
+        Process proc = runtime.exec(tache);
+        proc.getOutputStream().close();
+        InputStream inputstream = proc.getInputStream();
+        InputStreamReader inputstreamreader = new InputStreamReader(inputstream);
+        BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
+        
+        String line;
+        while ((line = bufferedreader.readLine()) != null) 
+        {
+            System.out.println(line);          
+        }
+ 
+	}
+	public void afficherDate(int[] maDate)
+	{
+		System.out.println("date/heure : "+maDate[0]+"/"+maDate[1]+"/"+maDate[2]+" "+maDate[3]+":"+maDate[4]+":"+maDate[5]);
+	}
+}
