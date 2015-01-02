@@ -1,0 +1,39 @@
+import java.io.FileNotFoundException;
+
+
+public class Dependance {
+	OuvrirFichier fichierDependances = new OuvrirFichier();
+	static String dependancesPath = "E:/Outil/Workspace/Ordonnanceur/Ordonnanceur/bin/fichiers_config/dependances.txt";
+	static int nbColonnes = 0;
+	public Dependance()
+	{
+		
+	}
+	public String[] ouvrirFichierDependance() throws FileNotFoundException
+	{
+		
+		String[] dependance = new String[fichierDependances.compterLigne(dependancesPath)];
+		dependance = fichierDependances.lireFichier(dependancesPath);
+		for (int i=0;i<fichierDependances.compterLigne(dependancesPath);i++)
+		{
+			dependance[i] = i +1+" : "+dependance[i];
+		}
+		return dependance;
+	}
+	public int getLigneFichierDependances() throws FileNotFoundException
+	{	
+		
+		return fichierDependances.compterLigne(dependancesPath);
+	}
+	public int getPatternParLigne() throws FileNotFoundException
+	{
+		nbColonnes = fichierDependances.compterPatternParLigne(dependancesPath, "// ");
+		return nbColonnes;
+	}
+	public int getPatternLigne(int ligne) throws FileNotFoundException
+	{
+		return fichierDependances.compterPatternLigne(ligne, dependancesPath, "// ");
+	}
+	
+
+}
