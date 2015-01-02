@@ -1,0 +1,33 @@
+import java.io.FileNotFoundException;
+
+
+
+public class Priorite {
+	static OuvrirFichier fichierPriorites = new OuvrirFichier();
+	static String prioritesPath = "E:/Outil/Workspace/Ordonnanceur/Ordonnanceur/bin/fichiers_config/priorites.txt";
+	
+	public Priorite(){
+		
+	}
+	public String[] ouvrirFichierPriorite() throws FileNotFoundException
+	{
+		
+		String[] priorite = new String[fichierPriorites.compterLigne(prioritesPath)];
+		priorite = fichierPriorites.lireFichier(prioritesPath);
+		
+	
+		for (int i=0;i<fichierPriorites.compterLigne(prioritesPath);i++)
+		{
+			priorite[i] = i +1+" : "+priorite[i];
+		}
+		return priorite;
+	}
+	public int getLigneFichierPriorites() throws FileNotFoundException
+	{
+		return fichierPriorites.compterLigne(prioritesPath);
+	}
+	public int getPatternParLigne() throws FileNotFoundException
+	{
+		return fichierPriorites.compterPatternParLigne(prioritesPath, "// ");
+	}
+}
