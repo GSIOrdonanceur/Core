@@ -1,0 +1,429 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.Timer;
+
+public class Ihm extends JFrame{
+	JFrame frame;
+	JTextArea displayO ;
+	JTextArea displayG ;
+	JTextField InO;
+	JTextField InG;
+	JMenuItem menuItem;
+	JMenu menu;
+	JMenu menu2;
+	JMenuBar menuBar;
+	JButton creerPlanning;
+	JLabel labelO;
+	JLabel labelG;
+	JTextField voyant = new JTextField("Off");
+	//voyant.setForeground(new Color(255,0,0));
+	JTextField horloge ;
+	
+	String[] bufferFieldG = new String[3];
+	String[] bufferFieldO = new String[3];
+	static int idG = 0;
+	static int idO = 0;
+	static int recupG = 0;
+	static int recupO = 0;
+	
+	boolean planningCreer = false;
+	public Ihm() {
+		voyant.setForeground(new Color(255,0,0));
+		voyant.setEditable(false);
+		voyant.setFont(new Font("sansserif", Font.PLAIN, 22));
+		voyant.setBounds(5, 10, 100, 25);
+		
+		//210, 25, 570, 10
+		
+	}
+	public void creerFenetre(String nom, int longueur,int largeur)
+	{
+		ImageIcon img = new ImageIcon("E:/Outil/Workspace/Ordonnanceur/Ordonnanceur/bin/fichiers_config/logo.png");
+		
+		frame = new JFrame(nom);
+		
+		frame.setSize(longueur, largeur);
+		frame.setIconImage(img.getImage());
+		frame.setVisible(true);
+		frame.setLayout(null);
+		frame.getContentPane().add(voyant);
+		frame.repaint();
+	 
+	}
+	
+	public void creerTextFieldO(String info, int longueur, int largeur, int x, int y, boolean editable)
+	{
+		InO= new JTextField();
+		InO.setToolTipText(info);
+		InO.setEditable(editable);
+		InO.setBounds(x, y, longueur, largeur);
+		InO.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+
+		    	//SI ON CLIQUE SUR LE ENTER JTEXTFIELDO
+				if(e.getActionCommand().equals("") != true)
+				{	
+					bufferFieldO[idO] = e.getActionCommand();
+			    	displayO.append(e.getActionCommand()+"\n");
+			    	InO.setText("");
+			    	idO++;
+			    	recupO = 0;
+			    	if(idO > 2)
+			    		idO = 0;
+				}
+				if((e.getActionCommand().equals(".clean") == true))
+				{
+					displayO.setText("");
+				}
+			}
+		});
+		
+		KeyListener keyListener = new KeyListener()
+		{
+	    	public void keyPressed(KeyEvent keyEvent) 
+	    	{
+	    		printIt("Pressed", keyEvent);
+	    		if (keyEvent.getKeyCode() == 38)
+	    		{
+	    			InO.setText(bufferFieldO[recupO]);
+	    			recupO++;
+	    			if(recupO > 2)
+	    				recupO = 0;
+	    		}
+	    		
+	    	}
+	    	public void keyReleased(KeyEvent keyEvent)
+	    	{
+	    		printIt("Released", keyEvent);
+	    	}
+	
+		    public void keyTyped(KeyEvent keyEvent)
+		    {
+		    	printIt("Typed", keyEvent);
+		    }
+	
+			private void printIt(String title, KeyEvent keyEvent)
+			{
+		        int keyCode = keyEvent.getKeyCode();
+		       // System.out.println("code :"+keyCode);
+		        String keyText = KeyEvent.getKeyText(keyCode);
+		        System.out.println(title + " : " + keyText + " / " + keyEvent.getKeyChar());
+		    }
+		};
+		InO.addKeyListener(keyListener);
+		
+		
+		
+		
+		
+		frame.getContentPane().add(InO);
+		frame.setVisible ( true );
+		frame.repaint();
+	}
+	public void creerTextFieldG(String info, int longueur, int largeur, int x, int y, boolean editable)
+	{
+		InG= new JTextField();
+		InG.setToolTipText(info);
+		InG.setEditable(editable);
+		InG.setBounds(x, y, longueur, largeur);
+		InG.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) {
+
+		    	//SI ON CLIQUE SUR LE ENTER JTEXTFIELDG
+				if(e.getActionCommand().equals("") != true)
+				{
+					bufferFieldG[idG] = e.getActionCommand();
+			    	displayG.append(e.getActionCommand()+"\n");
+			    	InG.setText("");
+			    	idG++;
+			    	recupG = 0;
+			    	if(idG > 2)
+			    		idG = 0;
+				}
+				if((e.getActionCommand().equals(".clean") == true))
+				{
+					displayG.setText("");
+				}
+			}
+		});
+		
+		KeyListener keyListener = new KeyListener()
+		{
+	    	public void keyPressed(KeyEvent keyEvent) 
+	    	{
+	    		
+	    		//SI ON APPUI SUR HAUT
+	    		printIt("Pressed", keyEvent);
+	    		if (keyEvent.getKeyCode() == 38)
+	    		{
+	    			InG.setText(bufferFieldG[recupG]);
+	    			recupG++;
+	    			if(recupG > 2)
+	    				recupG = 0;
+	    		}
+	    		
+	    	}
+	    	public void keyReleased(KeyEvent keyEvent)
+	    	{
+	    		printIt("Released", keyEvent);
+	    	}
+	
+		    public void keyTyped(KeyEvent keyEvent)
+		    {
+		    	printIt("Typed", keyEvent);
+		    }
+	
+			private void printIt(String title, KeyEvent keyEvent)
+			{
+		        int keyCode = keyEvent.getKeyCode();
+		       // System.out.println("code :"+keyCode);
+		        String keyText = KeyEvent.getKeyText(keyCode);
+		        System.out.println(title + " : " + keyText + " / " + keyEvent.getKeyChar());
+		    }
+		};
+		InG.addKeyListener(keyListener);
+		
+		
+		frame.getContentPane().add(InG);
+		frame.setVisible ( true );
+		frame.repaint();
+	}
+	public void creerTextAreaO(String init, int longueur, int largeur, int x, int y,boolean editable)
+	{
+		
+	
+
+	    displayO =new JTextArea ();
+	    displayO.setEditable (editable); 
+	    displayO.setToolTipText(init);
+	  // 
+	    JScrollPane scroll = new JScrollPane (displayO, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	  
+	    scroll.setBounds(x, y, longueur, largeur);
+	    //Add Textarea in to middle panel
+
+	    displayO.setLineWrap(true);
+        displayO.setWrapStyleWord(true);
+	    
+	    
+	    frame.getContentPane().add(scroll);
+	    
+	    frame.setVisible ( true );
+	
+
+	}
+	
+	
+	public void creerJMenuItem(String menu1, String boutton1, String boutton2, String menU2, String boutton3, String boutton4,String boutton5)
+	{
+		menuBar = new JMenuBar();
+		menu = new JMenu(menu1);
+		
+		menuBar.add(menu);
+		
+		menuItem = new JMenuItem(boutton1);
+		menuItem.setEnabled(true);
+		menuItem.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+
+	    	//SI ON CLIQUE SUR LE MENU/BOUTTON1
+    	
+	    	String[] fichier =null;
+	        JFileChooser chooser = new JFileChooser();
+	        File file = new File("E:/Outil/Workspace/Ordonnanceur/Ordonnanceur/bin/fichiers_config/");
+	        PrintWriter sortie = null;
+	        chooser.setCurrentDirectory(file);
+	        if (chooser.showOpenDialog(null)== JFileChooser.APPROVE_OPTION)
+	        {
+	        	file = chooser.getSelectedFile();
+	        	try 
+	        	{
+					java.awt.Desktop.getDesktop().open(file);
+				} 
+	        	catch (IOException e1) 
+	        	{
+	
+					e1.printStackTrace();
+				}
+	        }
+	    	
+		}});
+		menu.add(menuItem);
+		
+		
+		menuItem = new JMenuItem(boutton2);
+		menuItem.setEnabled(true);
+		menuItem.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+
+	    	//SI ON CLIQUE SUR LE MENU/BOUTTON2
+			
+			JOptionPane.showMessageDialog(frame, "Liste des commandes:\n\n.clean\n");
+			
+	        
+	    	
+		}});
+		
+		menu.add(menuItem);
+		
+		
+
+		
+		
+		this.menu2 = new JMenu(menU2);
+		
+		
+		
+		menuItem = new JMenuItem(boutton3);
+		menuItem.setEnabled(false);
+		menuItem.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+			
+	    	//SI ON CLIQUE SUR LE MENU2/BOUTTON3
+			menu2.getItem(1).setEnabled(true);
+			menu2.getItem(2).setEnabled(false);
+			menu2.getItem(0).setEnabled(false);
+			displayO.append("Début de l'ordonnancement\n");
+			voyant.setForeground(new Color(0,255,0));
+			voyant.setText("On");
+	    	
+		}});
+		this.menu2.add(menuItem);
+		
+		menuItem = new JMenuItem(boutton5);
+		menuItem.setEnabled(false);
+		menuItem.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+
+	    	//SI ON CLIQUE SUR LE MENU2/BOUTTON5
+			menu2.getItem(1).setEnabled(false);
+			menu2.getItem(2).setEnabled(true);
+			voyant.setForeground(new Color(255,128,0));
+			voyant.setText("En attente");
+			displayO.append("Pause\n");
+	        
+	    	
+		}});
+		
+		this.menu2.add(menuItem);
+		
+		
+		menuItem = new JMenuItem(boutton4);
+		menuItem.setEnabled(true);
+		menuItem.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+
+	    	//SI ON CLIQUE SUR LE MENU2/BOUTTON4
+			menu2.getItem(0).setEnabled(true);
+			voyant.setForeground(new Color(255,128,0));
+			voyant.setText("En attente");
+			displayO.append("Planning généré\n");
+	    	
+		}});
+		
+		this.menu2.add(menuItem);
+		
+		
+		
+		menuBar.add(menu);
+		menuBar.add(this.menu2);
+		frame.setJMenuBar(menuBar);
+		frame.setVisible(true);
+		frame.repaint();
+	}
+	
+	public void creerJLabelO(String init, int longueur, int largeur, int x, int y)
+	{
+		labelO = new JLabel(init);
+		labelO.setBounds(x, y, longueur, largeur);
+			
+		frame.add(labelO);
+		frame.setVisible(true);
+		frame.repaint();
+	}
+	public void creerJLabelG(String init, int longueur, int largeur, int x, int y)
+	{
+		labelG = new JLabel(init);
+		labelG.setBounds(x, y, longueur, largeur);
+			
+		frame.add(labelG);
+		frame.setVisible(true);
+		frame.repaint();
+	}
+	public void creerTextAreaG(String init, int longueur, int largeur, int x, int y,boolean editable)
+	{
+		
+	
+
+	    displayG =new JTextArea();
+	    displayG.setToolTipText(init);
+	    displayG.setEditable (true); 
+	 
+	    JScrollPane scroll = new JScrollPane (displayG, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    
+	    scroll.setBounds(x, y, longueur, largeur);
+	    //Add Textarea in to middle panel
+
+	    displayG.setLineWrap(true);
+        displayG.setWrapStyleWord(true);
+	    
+	    
+	    frame.getContentPane().add(scroll);
+	  //  frame.pack ();
+	
+	 //   frame.setLocationRelativeTo ( null );
+	    
+	    frame.setVisible ( true );
+	
+
+	}
+	public void creerHorloge(String init, int longueur, int largeur, int x, int y)
+	{
+		horloge = new JTextField();
+		horloge.setEditable(false);
+		horloge.setToolTipText(init);
+		horloge.setBounds(x, y, longueur, largeur);
+		horloge.setFont(new Font("sansserif", Font.PLAIN, 22));
+		 javax.swing.Timer t = new javax.swing.Timer(1000, new ClockListener());
+	        t.start();
+		
+		
+		
+		frame.getContentPane().add(horloge);
+		frame.repaint();
+		
+		frame.setVisible ( true );
+	}
+	class ClockListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            horloge.setText(df.format(Calendar.getInstance().getTime()));
+        }
+    }
+	
+}
