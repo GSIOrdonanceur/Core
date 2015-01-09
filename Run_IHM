@@ -1,0 +1,24 @@
+public class Run {
+
+	public static void main(String[] args) {
+		Ihm monIhm = new Ihm();
+		monIhm.creerFenetre("Ordonnanceur", 800,570);
+		
+		monIhm.creerTextAreaG("Sortis Power Shell", 300,300, 450, 70, false);
+		monIhm.creerTextAreaO("Sortis ordonnanceur", 300,300, 50, 70, false);
+		
+		monIhm.creerTextFieldG("PowerShell", 300, 20, 450, 370, true);
+		monIhm.creerTextFieldO("Ordonanceur", 300, 20, 50, 370, true);
+		
+		monIhm.creerJMenuItem("Option","Configuration","Aide","Ordonnancement","Lancer ordonnancement","Générer planning","Pause");
+		
+		
+		monIhm.creerJLabelO("Ordonnanceur :" , 200, 20, 50, 50);
+		monIhm.creerJLabelG("Execution Power Shell :" , 200, 20, 450, 50);
+		
+		monIhm.creerHorloge("Horloge", 210, 25, 570, 10);
+		
+		
+	}
+
+}
